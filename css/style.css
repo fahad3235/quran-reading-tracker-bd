@@ -1,0 +1,50 @@
+/* quran-reading-tracker-bd -- ASCII only */
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #1c2b24; background: #f4f7f4; line-height: 1.45; }
+.top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 20px 20px 8px; max-width: 1020px; margin: 0 auto; }
+.top h1 { margin: 0; font-size: 1.7rem; color: #14532d; }
+.top p { margin: 4px 0 0; color: #55665e; }
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; max-width: 1020px; margin: 8px auto; padding: 0 20px; }
+.tab { border: 1px solid #c8d8cf; background: #fff; padding: 9px 16px; border-radius: 999px; cursor: pointer; font-size: 0.95rem; }
+.tab.active { background: #14532d; color: #fff; border-color: #14532d; }
+main { max-width: 1020px; margin: 0 auto; padding: 0 20px 24px; }
+.panel { display: none; background: #fff; border: 1px solid #dde8e1; border-radius: 12px; padding: 18px; }
+.panel.active { display: block; }
+h2 { margin-top: 0; color: #14532d; }
+h3 { color: #14532d; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.stat { background: #eef5ef; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+.stat .lbl { font-size: 0.82rem; color: #55665e; }
+.stat strong { font-size: 1.35rem; }
+.bar { height: 12px; background: #e3ece6; border-radius: 999px; overflow: hidden; margin: 10px 0 16px; }
+.bar-fill { height: 100%; background: #1f6f4a; border-radius: 999px; }
+#chartSvg { background: #fbfdfb; border: 1px solid #e3ece6; border-radius: 8px; }
+.chart-labels { display: flex; justify-content: space-between; font-size: 0.72rem; color: #55665e; margin: 4px 0 12px; flex-wrap: wrap; gap: 4px; }
+.juz-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.juz-tile { border: 1px solid #dde8e1; border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 2px; font-size: 0.85rem; }
+.mini-bar { height: 6px; background: #e3ece6; border-radius: 999px; overflow: hidden; }
+.mini-bar div { height: 100%; background: #1f6f4a; }
+form { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 8px; }
+label { display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; }
+input, select, textarea { width: 100%; padding: 9px; border: 1px solid #c8d8cf; border-radius: 8px; font-size: 0.95rem; background: #fff; }
+.btn { background: #14532d; color: #fff; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-size: 0.95rem; }
+.btn.secondary { background: #fff; color: #14532d; border: 1px solid #14532d; }
+.btn.danger { background: #9b1c1c; }
+.btn.small { padding: 5px 10px; font-size: 0.82rem; }
+.msg { min-height: 1.2em; font-weight: 600; }
+.msg.ok { color: #14532d; }
+.msg.err { color: #9b1c1c; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.tbl th, .tbl td { border-bottom: 1px solid #e3ece6; padding: 8px 6px; text-align: left; vertical-align: top; }
+.khatma-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: end; max-width: 640px; }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 8px 0; }
+.row input[type="text"] { max-width: 220px; }
+footer { max-width: 1020px; margin: 0 auto; padding: 0 20px 28px; color: #55665e; font-size: 0.85rem; }
+@media (max-width: 640px) {
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .juz-grid { grid-template-columns: repeat(2, 1fr); }
+  form { grid-template-columns: 1fr; }
+  .khatma-grid { grid-template-columns: 1fr; }
+  .top h1 { font-size: 1.35rem; }
+  .tbl { display: block; overflow-x: auto; }
+}

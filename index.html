@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quran Reading Tracker BD</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1 id="appTitle" data-i18n="appTitle">Quran Reading Tracker</h1>
+    <p id="tagline" data-i18n="tagline">Offline reading log, khatma planner and hifz tracker.</p>
+  </div>
+  <button id="langBtn" class="btn secondary" type="button" data-i18n="langBtn">&#x09ac;&#x09be;&#x0982;&#x09b2;&#x09be;</button>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button class="tab active" data-tab="dashboard" type="button" data-i18n="tabDashboard">Dashboard</button>
+  <button class="tab" data-tab="log" type="button" data-i18n="tabLog">Log</button>
+  <button class="tab" data-tab="khatma" type="button" data-i18n="tabKhatma">Khatma</button>
+  <button class="tab" data-tab="hifz" type="button" data-i18n="tabHifz">Hifz</button>
+  <button class="tab" data-tab="data" type="button" data-i18n="tabData">Data</button>
+</nav>
+
+<main>
+<section id="tab-dashboard" class="panel active">
+  <h2 id="dashH" data-i18n="tabDashboard">Dashboard</h2>
+  <div class="stats">
+    <div class="stat"><span class="lbl" data-i18n="totalPages">Total pages read</span><strong id="statTotalPages">0</strong></div>
+    <div class="stat"><span class="lbl" data-i18n="totalMinutes">Total minutes</span><strong id="statTotalMinutes">0</strong></div>
+    <div class="stat"><span class="lbl" data-i18n="streak">Current streak (days)</span><strong id="statStreak">0</strong></div>
+    <div class="stat"><span class="lbl" data-i18n="longest">Longest streak (days)</span><strong id="statLongest">0</strong></div>
+    <div class="stat"><span class="lbl" data-i18n="avg7">Avg pages/day (last 7 days)</span><strong id="statAvg7">0.0</strong></div>
+    <div class="stat"><span class="lbl" data-i18n="overall">Overall progress</span><strong id="statOverallPct">0.00%</strong></div>
+  </div>
+  <div class="bar"><div id="overallBarFill" class="bar-fill" style="width:0%"></div></div>
+  <h3 data-i18n="last7Title">Last 7 days (pages)</h3>
+  <svg id="chartSvg" viewBox="0 0 700 160" width="100%" height="160" role="img" aria-label="Last 7 days bar chart"></svg>
+  <div id="chartLabels" class="chart-labels"></div>
+  <h3 data-i18n="juzTitle">Progress by juz</h3>
+  <div id="juzGrid" class="juz-grid"></div>
+</section>
+
+<section id="tab-log" class="panel">
+  <h2 data-i18n="logTitle">Add reading entry</h2>
+  <form id="logForm">
+    <label><span data-i18n="date">Date</span><input id="logDate" type="date" required></label>
+    <label><span data-i18n="juz">Juz</span><select id="logJuz"></select></label>
+    <label><span data-i18n="fromPage">From page</span><input id="logFrom" type="number" min="1" max="604" required></label>
+    <label><span data-i18n="toPage">To page</span><input id="logTo" type="number" min="1" max="604" required></label>
+    <label><span data-i18n="minutes">Minutes</span><input id="logMinutes" type="number" min="0" value="0" required></label>
+    <label><span data-i18n="note">Note (optional)</span><input id="logNote" type="text" maxlength="200"></label>
+    <button class="btn" type="submit" data-i18n="addEntry">Add entry</button>
+  </form>
+  <p id="logMsg" class="msg" role="status"></p>
+  <h3 data-i18n="entriesTitle">Entries (newest first)</h3>
+  <div id="logList"></div>
+</section>
+
+<section id="tab-khatma" class="panel">
+  <h2 data-i18n="khatmaTitle">Khatma planner</h2>
+  <p><span data-i18n="currentPage">Current page</span>: <strong id="khCurrent">0</strong> / 604</p>
+  <p><span data-i18n="pagesLeft">Pages left</span>: <strong id="khLeft">604</strong></p>
+  <div class="bar"><div id="khBarFill" class="bar-fill" style="width:0%"></div></div>
+  <div class="khatma-grid">
+    <label><span data-i18n="targetDate">Target finish date</span><input id="khTarget" type="date"></label>
+    <button class="btn" id="khByDateBtn" type="button" data-i18n="calcByDate">Compute pages/day</button>
+    <label><span data-i18n="pagesPerDay">Pages per day</span><input id="khPace" type="number" min="1" value="10"></label>
+    <button class="btn" id="khByPaceBtn" type="button" data-i18n="calcByPace">Compute finish date</button>
+  </div>
+  <p id="khResult" class="msg" role="status"></p>
+  <p id="khOnTrack" class="msg" role="status"></p>
+</section>
+
+<section id="tab-hifz" class="panel">
+  <h2 data-i18n="hifzTitle">Add hifz entry</h2>
+  <form id="hifzForm">
+    <label><span data-i18n="surah">Surah</span><select id="hSurah"></select></label>
+    <label><span data-i18n="ayahFrom">Ayah from</span><input id="hFrom" type="number" min="1" value="1" required></label>
+    <label><span data-i18n="ayahTo">Ayah to</span><input id="hTo" type="number" min="1" value="1" required></label>
+    <label><span data-i18n="status">Status</span><select id="hStatus"><option>Memorizing</option><option>Reviewing</option><option>Memorized</option></select></label>
+    <label><span data-i18n="reviewCount">Review count</span><input id="hReviews" type="number" min="0" value="0" required></label>
+    <button class="btn" type="submit" data-i18n="addHifz">Add hifz entry</button>
+  </form>
+  <p id="hifzMsg" class="msg" role="status"></p>
+  <h3><span data-i18n="dueTitle">Due today</span> (<span id="hifzDueCount">0</span>)</h3>
+  <div id="hifzDue"></div>
+  <h3><span data-i18n="allTitle">All hifz entries</span> &mdash; <span data-i18n="memorized">Memorized</span>: <span id="hifzMemorized">0</span></h3>
+  <div id="hifzList"></div>
+</section>
+
+<section id="tab-data" class="panel">
+  <h2 data-i18n="dataTitle">Export / Import / Erase</h2>
+  <button class="btn" id="exportBtn" type="button" data-i18n="exportBtn">Download JSON export</button>
+  <p data-i18n="importHint">Paste exported JSON below, or choose a file.</p>
+  <textarea id="importText" rows="8" placeholder='{"logs": [], "hifz": []}'></textarea>
+  <div class="row">
+    <input id="importFile" type="file" accept=".json,application/json">
+    <button class="btn" id="importBtn" type="button" data-i18n="importBtn">Import JSON</button>
+  </div>
+  <p id="dataMsg" class="msg" role="status"></p>
+  <h3 data-i18n="eraseTitle">Erase all data</h3>
+  <p data-i18n="eraseHint">Type DELETE to confirm wiping all logs and hifz entries.</p>
+  <div class="row">
+    <input id="eraseInput" type="text" placeholder="DELETE" autocomplete="off">
+    <button class="btn danger" id="eraseBtn" type="button" data-i18n="eraseBtn">Erase all data</button>
+  </div>
+  <p id="eraseMsg" class="msg" role="status"></p>
+</section>
+</main>
+
+<footer><p id="disclaimer" data-i18n="disclaimer">Personal offline tracker. Page numbering follows the 604-page Madani mushaf (adjust if your mushaf differs). This app is not a religious authority.</p></footer>
+
+<script src="js/logic.js"></script>
+<script>
+(function () {
+  "use strict";
+  var Q = window.QRT;
+  var params = new URLSearchParams(location.search);
+  var ASOF = params.get("asof") || Q.todayStr();
+  if (!Q.isValidDateStr(ASOF)) ASOF = Q.todayStr();
+
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(Q.STORAGE_KEY);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (parsed && Array.isArray(parsed.logs) && Array.isArray(parsed.hifz)) {
+          return { logs: parsed.logs, hifz: parsed.hifz, lang: parsed.lang === "bn" ? "bn" : "en" };
+        }
+      }
+    } catch (e) { /* corrupted storage -> fresh state */ }
+    return { logs: [], hifz: [], lang: "en" };
+  }
+  var state = loadState();
+  function save() { try { localStorage.setItem(Q.STORAGE_KEY, JSON.stringify(state)); } catch (e) {} }
+  function lang() { return state.lang; }
+  function tr(k) { return Q.t(k, lang()); }
+  function n(v) { return Q.fmtNum(v, lang()); }
+  function pct(v) { return Q.fmtPct(v, lang()) + "%"; }
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function applyI18n() {
+    document.querySelectorAll("[data-i18n]").forEach(function (el) {
+      el.textContent = tr(el.getAttribute("data-i18n"));
+    });
+    document.documentElement.lang = lang() === "bn" ? "bn" : "en";
+  }
+
+  function renderDashboard() {
+    var st = Q.computeStats(state.logs, ASOF);
+    $("statTotalPages").textContent = n(st.totalPages);
+    $("statTotalMinutes").textContent = n(st.totalMinutes);
+    $("statStreak").textContent = n(st.streak);
+    $("statLongest").textContent = n(st.longestStreak);
+    $("statAvg7").textContent = lang() === "bn" ? Q.toBnDigits(st.avg7Pages.toFixed(1)) : st.avg7Pages.toFixed(1);
+    $("statOverallPct").textContent = pct(st.overallPct);
+    $("overallBarFill").style.width = Math.min(st.overallPct, 100) + "%";
+    // 7-day chart
+    var max = 1;
+    st.last7.forEach(function (d) { if (d.pages > max) max = d.pages; });
+    var bars = st.last7.map(function (d, i) {
+      var h = Math.round(d.pages / max * 120);
+      var x = 10 + i * 98;
+      return '<rect x="' + x + '" y="' + (140 - h) + '" width="60" height="' + h + '" fill="#1f6f4a" rx="4"><title>' + d.date + ": " + d.pages + "</title></rect>";
+    }).join("");
+    $("chartSvg").innerHTML = bars + '<line x1="0" y1="140" x2="700" y2="140" stroke="#ccc" />';
+    $("chartLabels").innerHTML = st.last7.map(function (d) {
+      return "<span>" + (lang() === "bn" ? Q.toBnDigits(d.date.slice(5)) : d.date.slice(5)) + " (" + n(d.pages) + ")</span>";
+    }).join("");
+    // juz tiles
+    var tiles = "";
+    for (var j = 1; j <= 30; j++) {
+      var p = Q.juzProgress(state.logs, j);
+      var pp = Math.min(p.pct, 100);
+      tiles += '<div class="juz-tile"><strong>' + tr("juzLabel") + " " + n(j) + '</strong><span>' + n(p.read) + "/" + n(p.total) + " " + tr("pagesLabel") + "</span><span>" + pct(p.pct) + '</span><div class="mini-bar"><div style="width:' + pp + '%"></div></div></div>';
+    }
+    $("juzGrid").innerHTML = tiles;
+    return st;
+  }
+
+  function renderLog() {
+    var sorted = state.logs.slice().sort(function (a, b) {
+      if (a.date !== b.date) return a.date < b.date ? 1 : -1;
+      return b.toPage - a.toPage;
+    });
+    if (!sorted.length) { $("logList").innerHTML = "<p>" + esc(tr("noEntries")) + "</p>"; return; }
+    var html = '<table class="tbl"><thead><tr><th>' + esc(tr("date")) + "</th><th>" + esc(tr("juz")) + "</th><th>" + esc(tr("fromPage")) + "-" + esc(tr("toPage")) + "</th><th>" + esc(tr("minutes")) + "</th><th>" + esc(tr("note")) + "</th><th></th></tr></thead><tbody>";
+    sorted.forEach(function (e) {
+      var idx = state.logs.indexOf(e);
+      html += "<tr><td>" + esc(e.date) + "</td><td>" + n(e.juz) + "</td><td>" + n(e.fromPage) + "-" + n(e.toPage) + "</td><td>" + n(e.minutes) + "</td><td>" + esc(e.note || "") + "</td><td><button class='btn small danger del-log' data-idx='" + idx + "' type='button'>" + esc(tr("delete")) + "</button></td></tr>";
+    });
+    $("logList").innerHTML = html + "</tbody></table>";
+    $("logList").querySelectorAll(".del-log").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        state.logs.splice(Number(btn.getAttribute("data-idx")), 1);
+        save(); renderAll(); $("logMsg").textContent = tr("entryDeleted");
+      });
+    });
+  }
+
+  function renderKhatma() {
+    var cp = Q.currentPage(state.logs);
+    var left = Q.TOTAL_PAGES - cp;
+    $("khCurrent").textContent = n(cp) + " (" + tr("juzLabel") + " " + n(cp > 0 ? Q.juzFromPage(cp) : 1) + ")";
+    $("khLeft").textContent = n(left);
+    $("khBarFill").style.width = Math.min(cp / Q.TOTAL_PAGES * 100, 100) + "%";
+    var st = Q.computeStats(state.logs, ASOF);
+    var ot = $("khOnTrack");
+    ot.textContent = "";
+    ot.dataset.avg7 = String(st.avg7Pages);
+  }
+
+  function hifzRow(e, idx) {
+    var name = Q.SURAHS[e.surah - 1][0];
+    var next = Q.nextReviewDate(e.lastReviewDate, e.reviewCount);
+    return "<tr><td>" + n(e.surah) + ". " + esc(name) + "</td><td>" + n(e.ayahFrom) + "-" + n(e.ayahTo) + "</td><td>" + esc(e.status) + "</td><td>" + n(e.reviewCount) + "</td><td>" + esc(next) + "</td><td><button class='btn small review-hifz' data-idx='" + idx + "' type='button'>" + esc(tr("markReviewed")) + "</button> <button class='btn small danger del-hifz' data-idx='" + idx + "' type='button'>" + esc(tr("delete")) + "</button></td></tr>";
+  }
+  function bindHifzButtons(container) {
+    container.querySelectorAll(".review-hifz").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var e = state.hifz[Number(btn.getAttribute("data-idx"))];
+        e.reviewCount += 1;
+        e.lastReviewDate = ASOF;
+        save(); renderAll();
+        $("hifzMsg").textContent = tr("reviewed") + Q.nextReviewDate(e.lastReviewDate, e.reviewCount);
+      });
+    });
+    container.querySelectorAll(".del-hifz").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        state.hifz.splice(Number(btn.getAttribute("data-idx")), 1);
+        save(); renderAll(); $("hifzMsg").textContent = tr("hifzDeleted");
+      });
+    });
+  }
+  function renderHifz() {
+    var due = Q.dueHifz(state.hifz, ASOF);
+    $("hifzDueCount").textContent = n(due.length);
+    if (!due.length) { $("hifzDue").innerHTML = "<p>" + esc(tr("noDue")) + "</p>"; }
+    else {
+      var dh = '<table class="tbl"><tbody>';
+      due.forEach(function (e) { dh += hifzRow(e, state.hifz.indexOf(e)); });
+      $("hifzDue").innerHTML = dh + "</tbody></table>";
+    }
+    if (!state.hifz.length) { $("hifzList").innerHTML = "<p>" + esc(tr("noHifz")) + "</p>"; }
+    else {
+      var h = '<table class="tbl"><thead><tr><th>Surah</th><th>Ayah</th><th>Status</th><th>Reviews</th><th>Next review</th><th></th></tr></thead><tbody>';
+      state.hifz.forEach(function (e, i) { h += hifzRow(e, i); });
+      $("hifzList").innerHTML = h + "</tbody></table>";
+    }
+    bindHifzButtons($("hifzDue"));
+    bindHifzButtons($("hifzList"));
+    var mem = state.hifz.filter(function (e) { return e.status === "Memorized"; }).length;
+    $("hifzMemorized").textContent = n(mem);
+  }
+
+  function renderAll() {
+    applyI18n();
+    renderDashboard();
+    renderLog();
+    renderKhatma();
+    renderHifz();
+  }
+
+  // populate selects
+  (function () {
+    var juzSel = $("logJuz"), surahSel = $("hSurah");
+    for (var j = 1; j <= 30; j++) {
+      var o = document.createElement("option"); o.value = j; o.textContent = "Juz " + j; juzSel.appendChild(o);
+    }
+    Q.SURAHS.forEach(function (s, i) {
+      var o2 = document.createElement("option"); o2.value = i + 1; o2.textContent = (i + 1) + ". " + s[0] + " (" + s[1] + ")"; surahSel.appendChild(o2);
+    });
+  })();
+
+  // tabs
+  document.querySelectorAll(".tab").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll(".tab").forEach(function (b) { b.classList.remove("active"); });
+      document.querySelectorAll(".panel").forEach(function (p) { p.classList.remove("active"); });
+      btn.classList.add("active");
+      $("tab-" + btn.getAttribute("data-tab")).classList.add("active");
+    });
+  });
+
+  // language toggle
+  $("langBtn").addEventListener("click", function () {
+    state.lang = state.lang === "bn" ? "en" : "bn";
+    save(); renderAll();
+  });
+
+  // log form
+  $("logDate").value = ASOF;
+  $("logForm").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var entry = {
+      date: $("logDate").value,
+      juz: Number($("logJuz").value),
+      fromPage: Number($("logFrom").value),
+      toPage: Number($("logTo").value),
+      minutes: Number($("logMinutes").value),
+      note: $("logNote").value.trim()
+    };
+    var err = Q.validateLog(entry, ASOF);
+    if (err) { $("logMsg").textContent = err; $("logMsg").className = "msg err"; return; }
+    state.logs.push(entry);
+    save(); renderAll();
+    $("logMsg").textContent = tr("entrySaved"); $("logMsg").className = "msg ok";
+    $("logNote").value = "";
+  });
+
+  // khatma
+  $("khByDateBtn").addEventListener("click", function () {
+    var target = $("khTarget").value;
+    var cp = Q.currentPage(state.logs);
+    var left = Q.TOTAL_PAGES - cp;
+    if (!Q.isValidDateStr(target) || target <= ASOF) {
+      $("khResult").textContent = tr("targetError"); $("khResult").className = "msg err"; return;
+    }
+    var daysLeft = Q.daysBetween(ASOF, target);
+    var need = Q.neededPerDay(left, daysLeft);
+    var st = Q.computeStats(state.logs, ASOF);
+    var onTrack = st.avg7Pages >= need;
+    $("khResult").textContent = tr("needed") + ": " + n(need) + " (" + tr("pagesLeft") + " " + n(left) + ", " + n(daysLeft) + " days)";
+    $("khResult").className = "msg ok";
+    $("khOnTrack").textContent = (onTrack ? tr("onTrack") : tr("behind")) + " - " + (onTrack ? tr("onTrackHint") : tr("behindHint"));
+    $("khOnTrack").className = "msg " + (onTrack ? "ok" : "err");
+    $("khResult").dataset.needed = String(need);
+  });
+  $("khByPaceBtn").addEventListener("click", function () {
+    var pace = Number($("khPace").value);
+    var cp = Q.currentPage(state.logs);
+    var left = Q.TOTAL_PAGES - cp;
+    if (!pace || pace < 1) {
+      $("khResult").textContent = tr("paceError"); $("khResult").className = "msg err"; return;
+    }
+    var fin = Q.projectedFinish(ASOF, left, pace);
+    var st = Q.computeStats(state.logs, ASOF);
+    var onTrack = st.avg7Pages >= pace;
+    $("khResult").textContent = tr("projected") + ": " + fin;
+    $("khResult").className = "msg ok";
+    $("khOnTrack").textContent = (onTrack ? tr("onTrack") : tr("behind")) + " - " + (onTrack ? tr("onTrackHint") : tr("behindHint"));
+    $("khOnTrack").className = "msg " + (onTrack ? "ok" : "err");
+    $("khResult").dataset.finish = fin;
+  });
+
+  // hifz form
+  $("hifzForm").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var entry = {
+      surah: Number($("hSurah").value),
+      ayahFrom: Number($("hFrom").value),
+      ayahTo: Number($("hTo").value),
+      status: $("hStatus").value,
+      reviewCount: Number($("hReviews").value),
+      lastReviewDate: ASOF
+    };
+    var err = Q.validateHifz(entry);
+    if (err) { $("hifzMsg").textContent = err; $("hifzMsg").className = "msg err"; return; }
+    state.hifz.push(entry);
+    save(); renderAll();
+    $("hifzMsg").textContent = tr("hifzSaved"); $("hifzMsg").className = "msg ok";
+  });
+
+  // data tab
+  $("exportBtn").addEventListener("click", function () {
+    if (!state.logs.length && !state.hifz.length) { $("dataMsg").textContent = tr("noData"); $("dataMsg").className = "msg err"; return; }
+    var blob = new Blob([Q.exportData(state)], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "quran-reading-tracker-export.json";
+    document.body.appendChild(a); a.click(); a.remove();
+    $("dataMsg").textContent = tr("exportBtn") + " - OK";
+    $("dataMsg").className = "msg ok";
+  });
+  function doImport(text) {
+    var res = Q.parseImport(text, ASOF);
+    if (!res.ok) { $("dataMsg").textContent = tr("importFail") + res.error; $("dataMsg").className = "msg err"; return; }
+    state.logs = res.data.logs; state.hifz = res.data.hifz;
+    save(); renderAll();
+    $("dataMsg").textContent = tr("importOk"); $("dataMsg").className = "msg ok";
+  }
+  $("importBtn").addEventListener("click", function () { doImport($("importText").value); });
+  $("importFile").addEventListener("change", function () {
+    var f = $("importFile").files[0];
+    if (!f) return;
+    var r = new FileReader();
+    r.onload = function () { doImport(String(r.result)); };
+    r.readAsText(f);
+  });
+  $("eraseBtn").addEventListener("click", function () {
+    if ($("eraseInput").value !== "DELETE") {
+      $("eraseMsg").textContent = tr("eraseMismatch"); $("eraseMsg").className = "msg err"; return;
+    }
+    state.logs = []; state.hifz = [];
+    save(); renderAll();
+    $("eraseInput").value = "";
+    $("eraseMsg").textContent = tr("erased"); $("eraseMsg").className = "msg ok";
+  });
+
+  renderAll();
+  window.__QRT_READY = true;
+  window.__QRT = { state: state, asof: ASOF, parseImport: Q.parseImport, exportData: Q.exportData, I18N: Q.I18N };
+})();
+</script>
+</body>
+</html>
